@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
-import Board from './Board'
-import RecordsTable from './RecordsTable'
+import Board from './components/Board/Board'
+import RecordsTable from './components/RecordHolders/RecordsTable'
 
 const App = () => {
   const [data, setData] = useState(null)
