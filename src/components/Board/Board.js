@@ -1,16 +1,9 @@
 import { useEffect, useRef, useState } from "react"
 import useInterval from "../../hook.useInterval"
 import './Board.css'
+import { SQUARE, DIRECTIONS, FOOD } from "../../constants"
 
 const Board = ({changeData}) => {
-    const square = 50
-    const DIRECTIONS = {
-        38: [0, -1],
-        40: [0, 1], 
-        37: [-1, 0], 
-        39: [1, 0]
-    }
-    const FOOD = ["yellowgreen", "lightblue", "orange"]
     const boardRef = useRef(null)
     const [name, setName] = useState('') 
     const [snake, setSnake] = useState([[4, 5], [4, 4]])
@@ -54,12 +47,12 @@ const Board = ({changeData}) => {
     }
     const createFood = () => {
         setFoodColor(FOOD[Math.floor(Math.random() * FOOD.length)])
-        return food.map(() => Math.floor(Math.random() * 500/square))
+        return food.map(() => Math.floor(Math.random() * 500/SQUARE))
     }
     const checkCollision = (headSquare, snakeArg = snake) => {
-        if (headSquare[0] * square >= 500
+        if (headSquare[0] * SQUARE >= 500
             || headSquare[0] < 0
-            || headSquare[1] * square >= 500
+            || headSquare[1] * SQUARE >= 500
             || headSquare[1] < 0) return true 
         for (const piece of snakeArg) {
             if (headSquare[0] === piece[0] && headSquare[1] === piece[1]) return true
@@ -100,7 +93,7 @@ const Board = ({changeData}) => {
     useEffect(() => {
         const context = boardRef?.current?.getContext('2d')
         if (context) {
-            context.setTransform(square, 0, 0, square, 0, 0)
+            context.setTransform(SQUARE, 0, 0, SQUARE, 0, 0)
             context.clearRect(0, 0, window.innerWidth, window.innerHeight)
             context.fillStyle = "purple"
             snake.forEach(([x, y]) => context.fillRect(x, y, 1, 1))
