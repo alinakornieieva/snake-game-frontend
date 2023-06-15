@@ -5,10 +5,10 @@ import useInterval from "./hook.useInterval";
 const Board = () => {
     const square = 50
     const DIRECTIONS = {
-        38: [0, -1], // up
-        40: [0, 1], // down
-        37: [-1, 0], // left
-        39: [1, 0] // right
+        38: [0, -1],
+        40: [0, 1], 
+        37: [-1, 0], 
+        39: [1, 0]
       };
     const boardRef = useRef() 
     const [snake, setSnake] = useState([[4, 5], [4, 4]])
@@ -20,7 +20,7 @@ const Board = () => {
     const startGame = () => {
         setScore(0)
         setGameOver(false)
-        setSnake([[4, 5], [4, 4]])
+        setSnake([[4, 3], [4, 4]])
         setFood([4, 1])
         setDirection([0, -1])
         setSpeed(500)
@@ -28,6 +28,9 @@ const Board = () => {
     const endGame = () => {
         setSpeed(null)
         setGameOver(true)
+    }
+    const pauseGame = () => {
+        alert('Game is Paused, Press OK or Enter Key to continue Playing !!')
     }
     const moveSnake = (e) => {
         if (e.keyCode >= 37 && e.keyCode <= 40) setDirection(DIRECTIONS[e.keyCode])
@@ -40,12 +43,12 @@ const Board = () => {
             || headSquare[0] < 0
             || headSquare[1] * square >= 500
             || headSquare[1] < 0) return true 
-        snakeArg.forEach((piece) => {
+        for (const piece of snakeArg) {
+            console.log(headSquare[0], piece[0])
+            console.log(headSquare[1], piece[1])
+
             if (headSquare[0] === piece[0] && headSquare[1] === piece[1]) return true
-        })
-        // for (const piece of snakeArg) {
-        //     if (headSquare[0] === piece[0] && headSquare[1] === piece[1]) return true
-        // }
+        }
         return false
     }
     const checkFoodCollision = (snakeArg) => {
@@ -84,6 +87,7 @@ const Board = () => {
             className="board"
         />
         <button onClick={startGame}>Start</button>
+        <button onClick={pauseGame}>Pause</button>
         <div>{score}</div>
         {gameOver && <div>Game over!!</div>}
     </div>
