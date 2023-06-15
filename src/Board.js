@@ -39,7 +39,7 @@ const Board = () => {
     }
     const createFood = () => {
         setFoodColor(FOOD[Math.floor(Math.random() * FOOD.length)])
-        return food.map(() => Math.floor(Math.random() * 500/50))
+        return food.map(() => Math.floor(Math.random() * 500/square))
     }
     const checkCollision = (headSquare, snakeArg = snake) => {
         if (headSquare[0] * square >= 500
@@ -80,6 +80,9 @@ const Board = () => {
         setSnake(snakeCopy)
     }
     useEffect(() => {
+        setSpeed((prev) => prev + 200)
+    }, [score % 50 === 0])
+    useEffect(() => {
         const context = boardRef.current.getContext('2d')
         context.setTransform(square, 0, 0, square, 0, 0)
         context.clearRect(0, 0, window.innerWidth, window.innerHeight)
@@ -90,7 +93,7 @@ const Board = () => {
     }, [snake, food, gameOver])
     useInterval(() => gameLoop(), speed)
     return <div role="button" tabIndex="0" 
-    onKeyDown={(e) => moveSnake(e)}>
+        onKeyDown={(e) => moveSnake(e)}>
         <canvas width={500} height={500} ref={boardRef}
             className="board"
         />
