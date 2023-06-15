@@ -9,11 +9,13 @@ const Board = () => {
         40: [0, 1], 
         37: [-1, 0], 
         39: [1, 0]
-      };
+    }
+    const FOOD = ["yellowgreen", "lightblue", "orange"]
     const boardRef = useRef() 
     const [snake, setSnake] = useState([[4, 5], [4, 4]])
     const [score, setScore] = useState(0)
     const [food, setFood] = useState([4, 1])
+    const [foodColor, setFoodColor] = useState(FOOD[Math.floor(Math.random() * FOOD.length)]) 
     const [direction, setDirection] = useState([0, -1])
     const [speed, setSpeed] = useState(null)
     const [gameOver, setGameOver] = useState(false)
@@ -36,6 +38,7 @@ const Board = () => {
         if (e.keyCode >= 37 && e.keyCode <= 40) setDirection(DIRECTIONS[e.keyCode])
     }
     const createFood = () => {
+        setFoodColor(FOOD[Math.floor(Math.random() * FOOD.length)])
         return food.map(() => Math.floor(Math.random() * 500/50))
     }
     const checkCollision = (headSquare, snakeArg = snake) => {
@@ -44,17 +47,22 @@ const Board = () => {
             || headSquare[1] * square >= 500
             || headSquare[1] < 0) return true 
         for (const piece of snakeArg) {
-            console.log(headSquare[0], piece[0])
-            console.log(headSquare[1], piece[1])
-
             if (headSquare[0] === piece[0] && headSquare[1] === piece[1]) return true
         }
         return false
     }
     const checkFoodCollision = (snakeArg) => {
         if (snakeArg[0][0] === food[0] && snakeArg[0][1] === food[1]) {
-            setScore((score) => score += 1)
             let newFood = createFood()
+            if (foodColor === 'yellowgreen') {
+                setScore((prev) => prev + 1)
+            }
+            if (foodColor === 'lightblue') {
+                setScore((prev) => prev + 5)
+            }
+            if (foodColor === 'orange') {
+                setScore((prev) => prev + 10)
+            }
             while (checkCollision(newFood, snakeArg)) {
                 newFood = createFood()
             }
@@ -77,7 +85,7 @@ const Board = () => {
         context.clearRect(0, 0, window.innerWidth, window.innerHeight)
         context.fillStyle = "purple"
         snake.forEach(([x, y]) => context.fillRect(x, y, 1, 1))
-        context.fillStyle = "yellowgreen"
+        context.fillStyle = foodColor
         context.fillRect(food[0], food[1], 1, 1)
     }, [snake, food, gameOver])
     useInterval(() => gameLoop(), speed)
