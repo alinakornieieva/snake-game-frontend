@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react"
+import useInterval from "./hook.useInterval"
 import './Board.css'
-import useInterval from "./hook.useInterval";
 
-const Board = () => {
+const Board = ({changeData}) => {
     const square = 50
     const DIRECTIONS = {
         38: [0, -1],
@@ -11,7 +11,8 @@ const Board = () => {
         39: [1, 0]
     }
     const FOOD = ["yellowgreen", "lightblue", "orange"]
-    const boardRef = useRef() 
+    const boardRef = useRef(null)
+    const [name, setName] = useState('') 
     const [snake, setSnake] = useState([[4, 5], [4, 4]])
     const [score, setScore] = useState(0)
     const [food, setFood] = useState([4, 1])
@@ -19,6 +20,7 @@ const Board = () => {
     const [direction, setDirection] = useState([0, -1])
     const [speed, setSpeed] = useState(null)
     const [gameOver, setGameOver] = useState(false)
+    const [user, setUser] = useState(false)
     const startGame = () => {
         setScore(0)
         setGameOver(false)
@@ -27,9 +29,22 @@ const Board = () => {
         setDirection([0, -1])
         setSpeed(500)
     }
-    const endGame = () => {
+    const endGame = async () => {
         setSpeed(null)
         setGameOver(true)
+        if (name.length >= 1) {
+            await fetch('http://localhost:5000/post-score', {method: 'POST', body: JSON.stringify({name, score}),
+            headers: {
+                "Content-Type": "application/json",
+            }
+            })
+            .then(() => alert(`${name}, your score is - ${score}`))
+            .catch((e) => {
+                alert('Something went wrong...')
+                console.error(e)
+            })
+            changeData(gameOver)
+        }
     }
     const pauseGame = () => {
         alert('Game is Paused, Press OK or Enter Key to continue Playing !!')
@@ -83,24 +98,35 @@ const Board = () => {
         setSpeed((prev) => prev + 200)
     }, [score % 50 === 0])
     useEffect(() => {
-        const context = boardRef.current.getContext('2d')
-        context.setTransform(square, 0, 0, square, 0, 0)
-        context.clearRect(0, 0, window.innerWidth, window.innerHeight)
-        context.fillStyle = "purple"
-        snake.forEach(([x, y]) => context.fillRect(x, y, 1, 1))
-        context.fillStyle = foodColor
-        context.fillRect(food[0], food[1], 1, 1)
-    }, [snake, food, gameOver])
+        const context = boardRef?.current?.getContext('2d')
+        if (context) {
+            context.setTransform(square, 0, 0, square, 0, 0)
+            context.clearRect(0, 0, window.innerWidth, window.innerHeight)
+            context.fillStyle = "purple"
+            snake.forEach(([x, y]) => context.fillRect(x, y, 1, 1))
+            context.fillStyle = foodColor
+            context.fillRect(food[0], food[1], 1, 1)
+        }
+    }, [snake, food, gameOver, user])
     useInterval(() => gameLoop(), speed)
+    if (!user) {
+        return <form onSubmit={() => setUser(true)}>
+            <input value={name} onChange={(e) => setName(e.target.value)}
+            type="text" placeholder="Enter your name..."/>
+            <button type="submit">Next</button>
+        </form>
+    }
     return <div role="button" tabIndex="0" 
         onKeyDown={(e) => moveSnake(e)}>
+            <div className="greeting">Hi, {name}</div>
         <canvas width={500} height={500} ref={boardRef}
             className="board"
         />
-        <button onClick={startGame}>Start</button>
-        <button onClick={pauseGame}>Pause</button>
-        <div>{score}</div>
-        {gameOver && <div>Game over!!</div>}
+        <div className="score">Your score: <strong>{score}</strong></div>
+        <div>
+            <button onClick={startGame}>Start</button>
+            <button onClick={pauseGame}>Pause</button>
+        </div>
     </div>
 }
 

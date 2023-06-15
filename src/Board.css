@@ -1,3 +1,29 @@
 .board{
     border: 2px solid rgb(88, 88, 88);
 }
+
+.greeting{
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.score{
+    font-size: 22px;
+    margin: 10px;
+}
+
+button {
+    background-color: rgb(33, 27, 201);
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    margin: 0 10px;
+    padding: 5px 15px;
+    border-radius: 4px;
+}
+
+input{
+    padding: 5px;
+}
